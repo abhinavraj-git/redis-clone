@@ -17,13 +17,7 @@ public class MSetCommand implements Command {
 
             return;
         }
-        for (int i = 1; i < arguments.length; i += 2) {
-
-            String key = arguments[i];
-            String value = arguments[i + 1];
-
-            database.set(key, value);
-        }
+        database.mset(arguments);
         outputStream.write("+OK\r\n".getBytes());
         outputStream.flush();
     }

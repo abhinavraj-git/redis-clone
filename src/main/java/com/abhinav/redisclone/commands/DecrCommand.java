@@ -16,9 +16,7 @@ public class DecrCommand implements Command {
             return;
         }
         try {
-            int number = Integer.parseInt(value);
-            number--;
-            database.set(key, String.valueOf(number));
+            int number = database.decrement(key);
             outputStream.write((":" + number + "\r\n").getBytes());
         }
         catch (NumberFormatException e) {

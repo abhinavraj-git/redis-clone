@@ -9,11 +9,9 @@ public class MGetCommand implements Command {
     public void execute(String[] arguments, OutputStream outputStream) throws IOException {
         Database database = Database.getInstance();
         outputStream.write(("*" + (arguments.length - 1) + "\r\n").getBytes());
-        for (int i = 1; i < arguments.length; i++) {
+        String[] values = database.mget(arguments);
 
-            String key = arguments[i];
-            String value = database.get(key);
-
+        for (String value : values) {
             if (value == null) {
                 outputStream.write("$-1\r\n".getBytes());
             } else {
@@ -21,7 +19,6 @@ public class MGetCommand implements Command {
                 outputStream.write((value + "\r\n").getBytes());
             }
         }
-
         outputStream.flush();
     }
 }

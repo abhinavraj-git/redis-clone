@@ -14,17 +14,9 @@ public class AppendCommand implements Command {
         String key = arguments[1];
         String appendValue = arguments[2];
 
-        String currentValue = database.get(key);
+        int length = database.append(key, appendValue);
 
-        if (currentValue == null) {
-            currentValue = "";
-        }
-
-        String newValue = currentValue + appendValue;
-
-        database.set(key, newValue);
-
-        outputStream.write((":" + newValue.length() + "\r\n").getBytes());
+        outputStream.write((":" + length + "\r\n").getBytes());
         outputStream.flush();
     }
 }
