@@ -1,4 +1,6 @@
 package com.abhinav.redisclone.server;
+import com.abhinav.redisclone.storage.Database;
+
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -10,6 +12,7 @@ public class RedisServer {
     private final ExecutorService threadPool = Executors.newFixedThreadPool(10);
     public void start() {
         try {
+            Database.getInstance().loadFromDisk();
             ServerSocket serverSocket = new ServerSocket(DEFAULT_PORT);
             System.out.println("Redis Server listening on port " + DEFAULT_PORT);
             while (true) {

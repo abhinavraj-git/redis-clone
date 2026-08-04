@@ -23,6 +23,7 @@ public class CommandDispatcher {
         commands.put("KEYS", new KeysCommand());
         commands.put("TYPE", new TypeCommand());
         commands.put("EXPIRE", new ExpireCommand());
+        commands.put("SAVE", new SaveCommand());
     }
     public void dispatch(String[] arguments, OutputStream outputStream) throws IOException {
         Command command = commands.get(arguments[0].toUpperCase());

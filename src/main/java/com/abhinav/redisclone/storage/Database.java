@@ -1,13 +1,19 @@
 package com.abhinav.redisclone.storage;
-
+import java.io.Serializable;
+import java.io.ObjectOutputStream;
+import java.io.ObjectInputStream;
+import java.io.FileOutputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class Database {
+public class Database implements Serializable {
 
     private static final Database INSTANCE = new Database();
+    private static final String SAVE_FILE = "dump.rdb";
 
     public static Database getInstance() {
         return INSTANCE;
@@ -118,4 +124,33 @@ public class Database {
         }
         return false;
     }
+
+    public synchronized void saveToDisk() {
+        try (ObjectOutputStream out =
+                     new ObjectOutputStream(new FileOutputStream(SAVE_FILE))) {
+            out.writeObject(data);
+            out.writeObject(expiry);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public synchronized void loadFromDisk() {
+        try (ObjectInputStream in =
+                     new ObjectInputStream(new FileInputStream(SAVE_FILE))) {
+            Map<String, String> loadedData =
+                    (Map<String, String>) in.readObject();
+
+            Map<String, Long> loadedExpiry =
+                    (Map<String, Long>) in.readObject();
+            data.clear();
+            data.putAll(loadedData);
+            expiry.clear();
+            expiry.putAll(loadedExpiry);
+
+        } catch (IOException | ClassNotFoundException e) {
+        }
+    }
+
 }
