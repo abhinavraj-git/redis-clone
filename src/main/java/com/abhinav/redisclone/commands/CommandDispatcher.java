@@ -3,6 +3,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
 import java.util.Map;
+
 public class CommandDispatcher {
     private final Map<String, Command> commands = new HashMap<>();
     public CommandDispatcher() {
@@ -21,7 +22,7 @@ public class CommandDispatcher {
         commands.put("SETNX", new SetNxCommand());
         commands.put("KEYS", new KeysCommand());
         commands.put("TYPE", new TypeCommand());
-        commands.put("FLUSHDB", new FlushDbCommand());
+        commands.put("EXPIRE", new ExpireCommand());
     }
     public void dispatch(String[] arguments, OutputStream outputStream) throws IOException {
         Command command = commands.get(arguments[0].toUpperCase());

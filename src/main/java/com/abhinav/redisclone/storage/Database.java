@@ -1,33 +1,55 @@
 package com.abhinav.redisclone.storage;
 
+import java.util.HashSet;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class Database {
+
     private static final Database INSTANCE = new Database();
+
     public static Database getInstance() {
         return INSTANCE;
     }
+
     private final Map<String, String> data = new ConcurrentHashMap<>();
-    public void set(String key, String value) {
+    private final Map<String, Long> expiry = new ConcurrentHashMap<>();
+
+    public synchronized void set(String key, String value) {
         data.put(key, value);
     }
-    public String get(String key) {
+
+    public synchronized String get(String key) {
+        if (isExpired(key)) {
+            return null;
+        }
         return data.get(key);
     }
-    public boolean delete(String key) {
+
+    public synchronized boolean delete(String key) {
+        removeExpiry(key);
         return data.remove(key) != null;
     }
-    public boolean exists(String key) {
+
+    public synchronized boolean exists(String key) {
+        if (isExpired(key)) {
+            return false;
+        }
         return data.containsKey(key);
     }
-    public Set<String> keys() {
-        return data.keySet();
+
+    public synchronized Set<String> keys() {
+        Set<String> keys = new HashSet<>(data.keySet());
+        keys.removeIf(this::isExpired);
+        return keys;
     }
-    public void clear() {
+
+    public synchronized void clear() {
         data.clear();
+        expiry.clear();
     }
+
     public synchronized int increment(String key) {
         String value = data.getOrDefault(key, "0");
         int number = Integer.parseInt(value);
@@ -63,14 +85,37 @@ public class Database {
         for (int i = 1; i < arguments.length; i += 2) {
             data.put(arguments[i], arguments[i + 1]);
         }
-
     }
 
     public synchronized String[] mget(String[] arguments) {
         String[] values = new String[arguments.length - 1];
+
         for (int i = 1; i < arguments.length; i++) {
-            values[i - 1] = data.get(arguments[i]);
+            values[i - 1] = get(arguments[i]);
         }
+
         return values;
+    }
+
+    public synchronized void setExpiry(String key, long seconds) {
+        long expiryTime = System.currentTimeMillis() + (seconds * 1000);
+        expiry.put(key, expiryTime);
+    }
+
+    public synchronized void removeExpiry(String key) {
+        expiry.remove(key);
+    }
+
+    public synchronized boolean isExpired(String key) {
+        Long expiryTime = expiry.get(key);
+        if (expiryTime == null) {
+            return false;
+        }
+        if (System.currentTimeMillis() >= expiryTime) {
+            data.remove(key);
+            expiry.remove(key);
+            return true;
+        }
+        return false;
     }
 }
