@@ -87,7 +87,7 @@ A lightweight Redis-inspired in-memory database server built from scratch in Jav
 ### Clone the repository
 
 ```bash
-git clone https://github.com/<your-username>/redis-clone.git
+git clone https://github.com/abhinavraj-git/redis-clone.git
 cd redis-clone
 ```
 
