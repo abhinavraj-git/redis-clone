@@ -1,6 +1,8 @@
 # Redis Clone
 
-A lightweight Redis-inspired in-memory database server built from scratch in Java. This project implements the Redis Serialization Protocol (RESP), supports concurrent client connections using sockets, and includes several core Redis features such as persistence, transactions, Pub/Sub messaging, TTL expiration, and authentication.
+A Redis-inspired in-memory key-value database built completely from scratch in Java. The project implements the Redis Serialization Protocol (RESP), supports concurrent client connections over TCP sockets, and recreates several core Redis features including persistence, transactions, Pub/Sub messaging, TTL expiration, authentication, and server monitoring.
+
+---
 
 ## Features
 
@@ -8,14 +10,14 @@ A lightweight Redis-inspired in-memory database server built from scratch in Jav
 - Multi-threaded TCP server
 - Thread-safe in-memory key-value database
 - String data type support
-- Persistence using snapshot storage
-- Key expiration (TTL)
+- Snapshot persistence
+- TTL (Time-To-Live) support
 - Background expiry cleanup thread
 - Transactions (MULTI / EXEC / DISCARD)
 - Publish / Subscribe messaging
 - Client authentication (AUTH)
 - Server statistics (INFO)
-- Thread pool for handling concurrent clients
+- Thread pool for concurrent client handling
 
 ---
 
@@ -77,8 +79,8 @@ A lightweight Redis-inspired in-memory database server built from scratch in Jav
 - ConcurrentHashMap
 - ExecutorService
 - Object Serialization
-- Git
 - Maven
+- Git
 
 ---
 
@@ -103,7 +105,7 @@ mvn clean install
 mvn exec:java
 ```
 
-or run the `Main.java` class directly from IntelliJ IDEA.
+Or run `Main.java` directly from IntelliJ IDEA.
 
 ### Connect using redis-cli
 
@@ -135,20 +137,46 @@ INFO
 
 ---
 
+## Benchmark
+
+A custom benchmarking client (`Benchmark.java`) is included to evaluate the performance of the server.
+
+The benchmark:
+
+- Establishes a TCP connection to the server
+- Authenticates using `AUTH`
+- Sends **100,000 RESP SET commands**
+- Measures execution time using `System.nanoTime()`
+- Calculates throughput (operations/second)
+
+### Sample Result
+
+```text
+Commands   : 100000
+Time       : 5.21 sec
+Throughput : 19,176 ops/sec
+```
+
+Across multiple benchmark runs after JVM warm-up, the server consistently achieved **18K–20K operations per second**.
+
+---
+
 ## Learning Outcomes
 
-Through this project I gained hands-on experience with:
+Through this project I gained practical experience with:
 
 - Socket programming
 - Multi-threaded server architecture
 - Concurrent programming in Java
-- Network protocol implementation (RESP)
+- RESP protocol implementation
 - Thread-safe data structures
-- Persistence mechanisms
-- Publish / Subscribe messaging systems
-- Authentication and session handling
+- In-memory database design
+- Snapshot persistence
+- Publish / Subscribe messaging
+- Authentication and session management
 - Transaction processing
-- System design fundamentals
+- Performance benchmarking
+- Systems programming fundamentals
 
 ---
 
@@ -173,4 +201,4 @@ This project is developed for educational purposes.
 
 **Abhinav Raj**
 
-- GitHub: https://github.com/abhinavraj-git
+GitHub: https://github.com/abhinavraj-git
