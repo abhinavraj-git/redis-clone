@@ -9,7 +9,7 @@ import java.util.List;
 
 public class ClientHandler implements Runnable {
     private final Socket clientSocket;
-
+    private boolean authenticated = false;
     private boolean inTransaction = false;
     private final List<String[]> queuedCommands = new ArrayList<>();
 
@@ -40,6 +40,31 @@ public class ClientHandler implements Runnable {
                     System.out.println(argument);
                 }
                 String command = arguments[0].toUpperCase();
+
+                if (command.equals("AUTH")) {
+
+                    if (arguments.length != 2) {
+                        outputStream.write("-ERR wrong number of arguments\r\n".getBytes());
+                        outputStream.flush();
+                        continue;
+                    }
+
+                    if (AuthManager.getInstance().authenticate(arguments[1])) {
+                        authenticated = true;
+                        outputStream.write("+OK\r\n".getBytes());
+                    } else {
+                        outputStream.write("-ERR invalid password\r\n".getBytes());
+                    }
+
+                    outputStream.flush();
+                    continue;
+                }
+
+                if (!authenticated) {
+                    outputStream.write("-NOAUTH Authentication required\r\n".getBytes());
+                    outputStream.flush();
+                    continue;
+                }
 
                 if (command.equals("SUBSCRIBE")) {
 
