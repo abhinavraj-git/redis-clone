@@ -13,11 +13,15 @@ public class RedisServer {
     public void start() {
         try {
             Database.getInstance().loadFromDisk();
+            Thread cleaner = new Thread(new ExpiryCleaner());
+            cleaner.setDaemon(true);
+            cleaner.start();
             ServerSocket serverSocket = new ServerSocket(DEFAULT_PORT);
             System.out.println("Redis Server listening on port " + DEFAULT_PORT);
             while (true) {
                 System.out.println("Waiting for a client...");
                 Socket clientSocket = serverSocket.accept();
+                ServerStats.getInstance().clientConnected();
                 System.out.println("Client connected!");
                 threadPool.execute(new ClientHandler(clientSocket));
             }

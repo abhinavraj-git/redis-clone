@@ -153,4 +153,19 @@ public class Database implements Serializable {
         }
     }
 
+    public synchronized void cleanupExpiredKeys() {
+        for (String key : new HashSet<>(expiry.keySet())) {
+            isExpired(key);
+        }
+
+    }
+
+    public synchronized int getTotalKeys() {
+        return data.size();
+    }
+
+    public synchronized int getExpiringKeys() {
+        return expiry.size();
+    }
+
 }

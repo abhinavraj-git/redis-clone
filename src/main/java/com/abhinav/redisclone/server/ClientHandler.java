@@ -34,6 +34,7 @@ public class ClientHandler implements Runnable {
                 if (arguments == null) {
                     break;
                 }
+                ServerStats.getInstance().commandProcessed();
                 System.out.println("Received:");
                 for (String argument : arguments) {
                     System.out.println(argument);
@@ -145,6 +146,7 @@ public class ClientHandler implements Runnable {
             System.out.println("Client disconnected.");
         } finally {
             try {
+                ServerStats.getInstance().clientDisconnected();
                 clientSocket.close();
             } catch (IOException ignored) {
             }
